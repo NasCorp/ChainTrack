@@ -1,0 +1,42 @@
+{
+  "version": "0.1.0",
+  "description": "ChainTrack: Your MetaMask watchdog for missed transactions.",
+  "proposedName": "ChainTrack",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NasCorp/ChainTrack.git"
+  },
+  "source": {
+    "shasum": "+l6zUGor773Bf8mB3QDMDqJvhahTmQMdWkUlDhj6QNU=",
+    "location": {
+      "npm": {
+        "filePath": "dist/bundle.js",
+        "iconPath": "images/icon.svg",
+        "packageName": "@nascorp/chain-track-snap",
+        "registry": "https://registry.npmjs.org/"
+      }
+    }
+  },
+  "initialPermissions": {
+    "snap_dialog": {},
+    "snap_notify": {},
+    "snap_manageState": {},
+    "endowment:rpc": {
+      "dapps": true,
+      "snaps": false
+    },
+    "endowment:ethereum-provider": {},
+    "endowment:network-access": {},
+    "endowment:cronjob": {
+      "jobs": [
+        {
+          "expression": "* * * * *",
+          "request": {
+            "method": "everyMinute"
+          }
+        }
+      ]
+    }
+  },
+  "manifestVersion": "0.1"
+}

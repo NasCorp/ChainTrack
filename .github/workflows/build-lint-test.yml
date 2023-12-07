@@ -1,0 +1,49 @@
+name: Build, Lint, and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-lint-test:
+    name: Build, Lint, and Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - run: yarn lint
+      - run: yarn build
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          GATSBY_GA_TRACKING_ID: ${{ secrets.GATSBY_GA_TRACKING_ID }}
+      - run: yarn test
+      - name: Cache snap build
+        if: ${{ matrix.node-version == '18.x' }}
+        uses: actions/cache@v3
+        with:
+          path: ./packages/snap/dist
+          key: snap-${{ runner.os }}-${{ github.sha }}
+      - name: Require clean working directory
+        shell: bash
+        run: |
+          if ! git diff --exit-code; then
+            echo "Working tree dirty after building"
+            exit 1
+          fi
+
+  all-jobs-pass:
+    name: All jobs pass
+    runs-on: ubuntu-latest
+    needs:
+      - build-lint-test
+    steps:
+      - run: echo "Great success!"
