@@ -43,7 +43,7 @@ export const AboutFeatureSection: FC = () => {
           variant={screenLessThanMedium ? 'h2' : 'h1'}
           fontWeight="500"
         >
-          Exclusively for MetaMask users, we'll alert you about recurring
+          Exclusively for MetaMask Flask users, we'll alert you about recurring
           transaction that hasn't taken place.
         </Typography>
         <BorderLine />
