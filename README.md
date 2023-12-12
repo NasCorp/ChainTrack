@@ -5,7 +5,7 @@ Experience peace of mind with ChainTrack, the premier tool dedicated to alerting
 In the dynamic world of decentralized finance, never miss a beat again.
 Our real-time notifications ensure you're always informed when a transaction doesn't occur, keeping your crypto management seamless and efficient.
 
-For now, we support  [MetaMask Flask](https://metamask.io/flask/) only. The stable version of Metamask will be supported after the audit.
+For now, we support [MetaMask Flask](https://metamask.io/flask/) only. The stable version of Metamask will be supported after the audit.
 
 # @metamask/template-snap-monorepo
 
