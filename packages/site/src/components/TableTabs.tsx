@@ -3,18 +3,15 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 
-import { Paper, useTheme } from '@mui/material';
+import { CircularProgress, Paper, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import {
-  Alerts,
-  Monitors,
-  PredefinedMonitors,
-  PredefinedMonitor,
-} from '../../../shared/types';
+import { useContext } from 'react';
+import { Alerts, Monitors, PredefinedMonitor } from '../../../shared/types';
 
-import { MonitorsTable } from './MonitorsTable';
-import { AlertsTable } from './AlertsTable';
-import { PredefinedMonitorsTable } from './PredefinedMonitorsTable';
+import { MetaMaskContext } from '../hooks';
+import { MonitorsList } from './MonitorsList';
+import { AlertsList } from './AlertsList';
+import { PredefinedMonitorsList } from './PredefinedMonitorsList';
 
 type TabPanelProps = {
   children?: React.ReactNode;
@@ -48,8 +45,7 @@ function handleTabs(index: number) {
 type TableTabsProps = {
   monitors: Monitors;
   alerts: Alerts;
-  predefinedMonitors: PredefinedMonitors;
-  openAddTransactionModal: (
+  setOpenTransactionModal: (
     predefinedMonitor: PredefinedMonitor,
     isEditTransaction?: boolean,
   ) => void;
@@ -61,12 +57,12 @@ type TableTabsProps = {
 export function TableTabs({
   monitors,
   alerts,
-  predefinedMonitors,
-  openAddTransactionModal,
+  setOpenTransactionModal,
   loadSnapData,
   tab,
   setTab,
 }: TableTabsProps) {
+  const [state] = useContext(MetaMaskContext);
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
 
@@ -121,61 +117,61 @@ export function TableTabs({
         </Tabs>
       </Box>
       <Box padding="12px 20px 20px 20px">
-        <Box
-          sx={{
-            border: 1,
-            borderRadius: '16px',
-            borderColor: theme.palette.primary.main,
-            backgroundColor:
-              theme?.palette?.mode === 'dark'
-                ? 'rgba(0, 0, 0, 0.5)'
-                : 'rgba(255, 255, 255, 0.5)',
-          }}
-          className="tabs-table-container"
-        >
-          <CustomTabPanel value={value} index={0}>
-            <MonitorsTable
-              loadSnapData={loadSnapData}
-              monitors={monitors.map((item) => {
-                return {
-                  key: item.id,
-                  ...item,
-                };
-              })}
-              openAddTransactionModal={(
-                predefinedMonitor: PredefinedMonitor,
-                isEditTransaction,
-              ) => {
-                openAddTransactionModal(predefinedMonitor, isEditTransaction);
-              }}
-            />
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={1}>
-            <AlertsTable
-              alerts={alerts.map((item) => {
-                return {
-                  key: item.monitor.id,
-                  ...item,
-                };
-              })}
-            />
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={2}>
-            <PredefinedMonitorsTable
-              predefinedMonitors={predefinedMonitors.map((item) => {
-                return {
-                  key: item.id,
-                  ...item,
-                };
-              })}
-              openAddTransactionModal={(
-                predefinedMonitor: PredefinedMonitor,
-              ) => {
-                openAddTransactionModal(predefinedMonitor);
-              }}
-            />
-          </CustomTabPanel>
-        </Box>
+        {state.isLoading ? (
+          <CircularProgress
+            sx={{ position: 'absolute', left: '50%', top: '50%' }}
+          />
+        ) : (
+          <Box
+            sx={{
+              border: 1,
+              borderRadius: '16px',
+              borderColor: theme.palette.primary.main,
+              backgroundColor:
+                theme?.palette?.mode === 'dark'
+                  ? 'rgba(0, 0, 0, 0.5)'
+                  : 'rgba(255, 255, 255, 0.5)',
+            }}
+            className="tabs-table-container"
+          >
+            <CustomTabPanel value={value} index={0}>
+              <MonitorsList
+                loadSnapData={loadSnapData}
+                monitors={monitors.map((item) => {
+                  return {
+                    key: item.id,
+                    ...item,
+                  };
+                })}
+                setOpenTransactionModal={(
+                  predefinedMonitor: PredefinedMonitor,
+                  isEditTransaction,
+                ) => {
+                  setOpenTransactionModal(predefinedMonitor, isEditTransaction);
+                }}
+              />
+            </CustomTabPanel>
+            <CustomTabPanel value={value} index={1}>
+              <AlertsList
+                alerts={alerts.map((item) => {
+                  return {
+                    key: item.monitor.id,
+                    ...item,
+                  };
+                })}
+              />
+            </CustomTabPanel>
+            <CustomTabPanel value={value} index={2}>
+              <PredefinedMonitorsList
+                setOpenTransactionModal={(
+                  predefinedMonitor: PredefinedMonitor,
+                ) => {
+                  setOpenTransactionModal(predefinedMonitor);
+                }}
+              />
+            </CustomTabPanel>
+          </Box>
+        )}
       </Box>
     </Paper>
   );

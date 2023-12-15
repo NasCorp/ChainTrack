@@ -7,6 +7,10 @@ import {
 
 const predefinedMonitors: PredefinedMonitors = [];
 
+predefinedMonitors.push({
+  id: 'none',
+} as any);
+
 // source: https://faucetlink.to/sepolia
 predefinedMonitors.push({
   id: '1c8f9052-df2c-406c-89e5-85c02435b62b',

@@ -7,7 +7,6 @@ import React, { useContext, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import {
   Alert,
-  CircularProgress,
   IconButton,
   Snackbar,
   useMediaQuery,
@@ -18,7 +17,7 @@ import {
   ConnectActionCard,
   StatsActionCard,
   DebugActionCard,
-  AddTransactionModal,
+  TransactionModal,
   TableTabs,
   CatalogActionCard,
 } from '../components';
@@ -29,7 +28,6 @@ import {
 } from '../utils';
 import { MetamaskActions, MetaMaskContext } from '../hooks';
 import { Monitor, PredefinedMonitor } from '../../../shared/types';
-import predefinedMonitors from '../../../shared/predefined-monitors';
 // eslint-disable-next-line import/no-unassigned-import
 import './styles.css';
 import useThrowAsyncError from '../utils/errorHandler';
@@ -46,8 +44,8 @@ const TrackingPage = () => {
   const screenLessThanLarge = useMediaQuery(theme.breakpoints.down('lg'));
   const [successSnackbarText, setSuccessSnackbarText] = useState<string>('');
   const [editTransaction, setEditTransaction] = useState<boolean>(false);
-  const [openAddTransactionModal, setOpenAddTransactionModal] = useState(false);
-  const [selectedPredefinedMonitor, setSelectedPredefinedMonitor] =
+  const [openTransactionModal, setOpenTransactionModal] = useState(false);
+  const [predefinedMonitor, setPredefinedMonitor] =
     useState<PredefinedMonitor>();
   const [tab, setTab] = useState(0);
   const throwAsyncError = useThrowAsyncError();
@@ -76,11 +74,6 @@ const TrackingPage = () => {
         loadSnapData,
       }) => (
         <Box display="flex" flexDirection="column" alignItems="center" flex="1">
-          {state.isLoading && (
-            <CircularProgress
-              sx={{ position: 'absolute', left: '50%', top: '50%' }}
-            />
-          )}
           <Box sx={{ flexGrow: 1 }} margin="24px" width="100%">
             <Grid container justifyContent="space-evenly" alignItems="stretch">
               <Grid item xs={11}>
@@ -107,10 +100,7 @@ const TrackingPage = () => {
                   <Grid item xs={getCardDimension()}>
                     <AddMonitorActionCard
                       installedSnap={state.installedSnap}
-                      handleSendAddClick={() => {
-                        setSelectedPredefinedMonitor(undefined);
-                        setOpenAddTransactionModal(true);
-                      }}
+                      handleSendAddClick={() => setOpenTransactionModal(true)}
                     />
                   </Grid>
                   <Grid item xs={getCardDimension()}>
@@ -138,15 +128,14 @@ const TrackingPage = () => {
                   monitors={state?.monitors || []}
                   loadSnapData={loadSnapData}
                   alerts={state?.alerts || []}
-                  predefinedMonitors={predefinedMonitors}
                   tab={tab}
                   setTab={setTab}
-                  openAddTransactionModal={(
-                    predefinedMonitor: PredefinedMonitor,
+                  setOpenTransactionModal={(
+                    newPredefinedMonitor: PredefinedMonitor,
                     isEditTransaction?: boolean,
                   ) => {
-                    setSelectedPredefinedMonitor(predefinedMonitor);
-                    setOpenAddTransactionModal(true);
+                    setPredefinedMonitor(newPredefinedMonitor);
+                    setOpenTransactionModal(true);
                     setEditTransaction(Boolean(isEditTransaction));
                   }}
                 />
@@ -163,51 +152,48 @@ const TrackingPage = () => {
               bottom: 20,
               position: 'fixed',
             }}
-            onClick={() => {
-              setSelectedPredefinedMonitor(undefined);
-              setOpenAddTransactionModal(true);
-            }}
+            onClick={() => setOpenTransactionModal(true)}
             disabled={!state.installedSnap}
           >
             <AddIcon />
           </Fab>
-          <AddTransactionModal
-            open={openAddTransactionModal}
-            editTransaction={editTransaction}
-            setOpenAddTransactionModal={setOpenAddTransactionModal}
-            handleClose={() => {
-              setSelectedPredefinedMonitor(undefined);
-              setOpenAddTransactionModal(false);
-              setEditTransaction(false);
-              loadSnapData();
-            }}
-            predefinedMonitor={selectedPredefinedMonitor}
-            handleAddMonitor={(monitor: Monitor) => {
-              dispatch({ type: MetamaskActions.SetLoading, payload: true });
-              addMonitor(monitor)
-                .then(() => {
-                  setSelectedPredefinedMonitor(undefined);
-                  setOpenAddTransactionModal(false);
-                  setSuccessSnackbarText(transactionAddedText);
-                  loadSnapData();
+          {openTransactionModal && (
+            <TransactionModal
+              editTransaction={editTransaction}
+              setOpenTransactionModal={setOpenTransactionModal}
+              handleClose={() => {
+                setPredefinedMonitor(undefined);
+                setOpenTransactionModal(false);
+                setEditTransaction(false);
+              }}
+              predefinedMonitor={predefinedMonitor}
+              handleAddMonitor={(monitor: Monitor) => {
+                dispatch({ type: MetamaskActions.SetLoading, payload: true });
+                addMonitor(monitor)
+                  .then(() => {
+                    setPredefinedMonitor(undefined);
+                    setOpenTransactionModal(false);
+                    setSuccessSnackbarText(transactionAddedText);
+                    loadSnapData();
+                  })
+                  .catch(throwAsyncError);
+              }}
+              handleUpdateMonitor={(updatedMonitor: Monitor) => {
+                dispatch({ type: MetamaskActions.SetLoading, payload: true });
+                updateMonitor({
+                  item: updatedMonitor,
                 })
-                .catch(throwAsyncError);
-            }}
-            handleUpdateMonitor={(editableMonitor: Monitor) => {
-              dispatch({ type: MetamaskActions.SetLoading, payload: true });
-              updateMonitor({
-                item: editableMonitor,
-              })
-                .then(() => {
-                  setSelectedPredefinedMonitor(undefined);
-                  setOpenAddTransactionModal(false);
-                  setEditTransaction(false);
-                  setSuccessSnackbarText(transactionUpdatedText);
-                  loadSnapData();
-                })
-                .catch(throwAsyncError);
-            }}
-          />
+                  .then(() => {
+                    setPredefinedMonitor(undefined);
+                    setOpenTransactionModal(false);
+                    setEditTransaction(false);
+                    setSuccessSnackbarText(transactionUpdatedText);
+                    loadSnapData();
+                  })
+                  .catch(throwAsyncError);
+              }}
+            />
+          )}
           <Snackbar
             open={Boolean(successSnackbarText)}
             autoHideDuration={6000}

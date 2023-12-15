@@ -131,6 +131,7 @@ export const Header = ({
                 anchorEl={anchorEl}
                 open={open}
                 onClose={() => setAnchorEl(null)}
+                className="navigation-menu"
               >
                 <MenuItem
                   onClick={() => {
