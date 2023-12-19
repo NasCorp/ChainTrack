@@ -29,7 +29,12 @@ export function AddMonitorActionCard({
   handleSendAddClick,
 }: ConnectActionCardProps) {
   const buttons = [
-    <MyButton onClick={handleSendAddClick} disabled={!installedSnap}>
+    <MyButton
+      onClick={handleSendAddClick}
+      disabled={!installedSnap}
+      mykey="addTransaction"
+      key="addTransaction"
+    >
       Add Transaction
     </MyButton>,
   ];

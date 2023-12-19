@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { Modal, Box, InputLabel, useTheme, useMediaQuery } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -14,25 +13,23 @@ import {
 import { MetaMaskContext } from '../hooks';
 import { MyButton } from './Button';
 
-type AddTransactionModalProps = {
-  open: boolean;
+type TransactionModalProps = {
   editTransaction: boolean;
-  setOpenAddTransactionModal: (value: boolean) => void;
+  setOpenTransactionModal: (value: boolean) => void;
   handleClose: () => void;
   handleAddMonitor: (monitor: Monitor) => void;
   handleUpdateMonitor: (monitor: Monitor) => void;
   predefinedMonitor?: PredefinedMonitor;
 };
 
-export const AddTransactionModal = ({
-  open,
+export const TransactionModal = ({
   editTransaction,
-  setOpenAddTransactionModal,
+  setOpenTransactionModal,
   handleClose,
   handleAddMonitor,
   handleUpdateMonitor,
   predefinedMonitor,
-}: AddTransactionModalProps) => {
+}: TransactionModalProps) => {
   const [state] = useContext(MetaMaskContext);
   const [monitor, setMonitor] = React.useState<Partial<PredefinedMonitor>>(
     predefinedMonitor || {},
@@ -41,25 +38,21 @@ export const AddTransactionModal = ({
   const screenLessThanSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   React.useEffect(() => {
-    setMonitor(predefinedMonitor || {});
-  }, [predefinedMonitor]);
+    if (editTransaction) {
+      return;
+    }
 
-  const from = monitor?.from || (state.wallets ? state.wallets[0] : undefined);
-  if (from !== monitor.from) {
-    setMonitor({ ...monitor, from });
-  }
-  const to = monitor?.to || (state.wallets ? state.wallets[0] : undefined);
-  if (to !== monitor.to) {
-    setMonitor({ ...monitor, to });
-  }
-  const chainId = monitor?.network || (state?.chainId as ChainIds);
-  if (chainId !== monitor.network) {
-    setMonitor({ ...monitor, network: chainId });
-  }
+    setMonitor({
+      ...monitor,
+      from: monitor?.from || (state.wallets ? state.wallets[0] : undefined),
+      to: monitor?.to || (state.wallets ? state.wallets[0] : undefined),
+      network: monitor?.network || (state?.chainId as ChainIds),
+    });
+  }, [state, open]);
 
   return (
     <Modal
-      open={open}
+      open
       onClose={() => {
         setMonitor({});
         handleClose();
@@ -89,7 +82,7 @@ export const AddTransactionModal = ({
               label="Name"
               focused
               variant="standard"
-              value={monitor?.name}
+              value={monitor?.name ?? ''}
               onChange={(event) => {
                 setMonitor({ ...monitor, name: event.target.value });
               }}
@@ -146,7 +139,7 @@ export const AddTransactionModal = ({
               required
               error={!monitor?.from}
               variant="standard"
-              value={monitor?.from}
+              value={monitor?.from ?? ''}
               onChange={(event) => {
                 setMonitor({ ...monitor, from: event.target.value });
               }}
@@ -159,7 +152,7 @@ export const AddTransactionModal = ({
               required
               error={!monitor?.to}
               variant="standard"
-              value={monitor?.to}
+              value={monitor?.to ?? ''}
               onChange={(event) => {
                 setMonitor({ ...monitor, to: event.target.value });
               }}
@@ -176,7 +169,7 @@ export const AddTransactionModal = ({
               }}
               error={!monitor?.intervalHours}
               variant="standard"
-              value={monitor?.intervalHours}
+              value={monitor?.intervalHours ?? ''}
               onChange={(event) => {
                 setMonitor({ ...monitor, intervalHours: event.target.value });
               }}
@@ -187,7 +180,7 @@ export const AddTransactionModal = ({
               label="Contract Address"
               focused
               variant="standard"
-              value={monitor?.contractAddress}
+              value={monitor?.contractAddress ?? ''}
               onChange={(event) => {
                 setMonitor({ ...monitor, contractAddress: event.target.value });
               }}
@@ -202,7 +195,7 @@ export const AddTransactionModal = ({
               InputProps={{
                 inputProps: { min: 0 },
               }}
-              value={monitor?.amount}
+              value={monitor?.amount ?? ''}
               onChange={(event) => {
                 setMonitor({
                   ...monitor,
@@ -218,7 +211,7 @@ export const AddTransactionModal = ({
               label="URL"
               focused
               variant="standard"
-              value={monitor?.url}
+              value={monitor?.url ?? ''}
               onChange={(event) => {
                 setMonitor({ ...monitor, url: event.target.value });
               }}
@@ -233,7 +226,7 @@ export const AddTransactionModal = ({
                 } else {
                   handleAddMonitor(monitor as Monitor);
                 }
-                setOpenAddTransactionModal(false);
+                setOpenTransactionModal(false);
                 setMonitor({});
               }}
               fullWidth
