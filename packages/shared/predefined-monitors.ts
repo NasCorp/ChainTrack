@@ -169,4 +169,70 @@ predefinedMonitors.push({
   category: MonitorCategory.Bridge,
 });
 
+predefinedMonitors.push({
+  id: '8a9defb3-b097-4a59-9693-beca874cd9e5',
+  name: 'WooFi Challenge Auto-compound',
+  to: '0xba91ffd8a2b9f68231eca6af51623b3433a89b13', // staking proxy
+  /*
+  Function: setAutoCompound(bool _flag)
+  MethodID: 0x86593454
+  [0]:  0000000000000000000000000000000000000000000000000000000000000001
+  */
+  method: 'setAutoCompound',
+  methodId: '0x86593454',
+  network: ChainNameToIdEnum.Mainnet,
+  intervalHours: '0', // means only once
+  url: 'https://fi.woo.org/swap/stake',
+  category: MonitorCategory.DEX,
+});
+
+predefinedMonitors.push({
+  id: '2145565f-d2d9-446e-9fa8-e98872d5d8eb',
+  name: 'WooFi Challenge Supercharge',
+  to: '0xba91ffd8a2b9f68231eca6af51623b3433a89b13',
+  /*
+  Function: stake(uint256 _amount)
+  MethodID: 0xa694fc3a
+  [0]:  000000000000000000000000000000000000000000000118f71990127b86dadd
+   */
+  method: 'stake',
+  methodId: '0xa694fc3a',
+  network: ChainNameToIdEnum.Mainnet,
+  intervalHours: '0', // means only once
+  url: 'https://fi.woo.org/swap/stake',
+  category: MonitorCategory.DEX,
+});
+
+predefinedMonitors.push({
+  id: 'f1c3d4cc-ffb1-49fb-aece-4091a89c57a0',
+  name: 'WooFi Challenge Swap',
+  to: '0x044c08639bD59BEB4F6ec52c0da6CD47283534E8',
+  /*
+    Function: externalSwap(address approveTarget,address swapTarget,address fromToken,address toToken,uint256 fromAmount,uint256 minToAmount,address to,bytes data)
+    MethodID: 0x199b83fa
+    [0]:  0000000000000000000000001111111254eeb25477b68fb85ed929f73a960582
+    [1]:  0000000000000000000000001111111254eeb25477b68fb85ed929f73a960582
+    [2]:  000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    [3]:  000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec7
+    [4]:  000000000000000000000000000000000000000000000000000aa87bee538000
+    [5]:  000000000000000000000000000000000000000000000000000000000059601d
+    [6]:  000000000000000000000000f197f751d78713570b5c332ad701b049ceb6b4af
+    [7]:  0000000000000000000000000000000000000000000000000000000000000100
+    [8]:  00000000000000000000000000000000000000000000000000000000000000c8
+    [9]:  0502b1c500000000000000000000000000000000000000000000000000000000
+    [10]: 00000000000000000000000000000000000000000000000000000000000aa87b
+    [11]: ee53800000000000000000000000000000000000000000000000000000000000
+    [12]: 0059601d00000000000000000000000000000000000000000000000000000000
+    [13]: 0000008000000000000000000000000000000000000000000000000000000000
+    [14]: 0000000100000000000000003b6d034074c99f3f5331676f6aec2756e1f39b4f
+    [15]: c029a83ef4636e51000000000000000000000000000000000000000000000000
+     */
+  method: 'externalSwap',
+  methodId: '0x199b83fa',
+  network: ChainNameToIdEnum.Mainnet,
+  intervalHours: '7*24',
+  url: 'https://fi.woo.org/swap/stake',
+  category: MonitorCategory.DEX,
+});
+
 export default predefinedMonitors;
